@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ profile_user.username }} 의 프로필 </h1>
+
+<div>
+  팔로워 수: {{ profile_user.fans.count }}
+</div>
+<div>
+  팔로잉 수: {{ profile_user.stars.count }}
+</div>
+
+{% if user.is_authenticated and profile_user != user %}
+<div>
+  <form action="{% url 'accounts:follow' profile_user.username %}" method="POST">
+    {% csrf_token %}
+    {% if is_following %}
+    <button>언팔로우</button>
+    {% else %}
+    <button>팔로우</button>
+    {% endif %}
+  </form>
+</div>
+{% endif %}
+
+
+<h2>작성글</h2>
+<ul>
+  {% for feed in profile_user.feeds.all %}
+  <li>
+    <a href="{% url 'board:feed_detail' feed.pk %}">
+      {{ feed.title }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<h2>좋아요 한 글</h2>
+<ul>
+  {% for feed in profile_user.like_feeds.all %}
+  <li>
+    <a href="{% url 'board:feed_detail' feed.pk %}">
+      {{ feed.title }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+<hr>
+
+<h2>댓글 모음</h2>
+<ul>
+  {% for reaction in profile_user.reactions.all %}
+  <li>
+    <a href="{% url 'board:feed_detail' reaction.feed.pk %}">
+      {{ reaction.content }}
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+
+{% endblock content %}
+
